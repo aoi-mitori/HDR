@@ -1,23 +1,28 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.ticker as ticker
 import os
-from copy import deepcopy
-import math
 
 
 # Read images
 dir_name = "Memorial_SourceImages"
+# dir_name = "exposures"
 
 images = []
 # images_rgb = []
 
-for filename in np.sort(os.listdir(dir_name)): # 讀出這個路徑下的檔案
-    if os.path.splitext(filename)[1] in ['.png', '.jpg']: # 只選png或jpg的檔案
+for filename in np.sort(os.listdir(dir_name)):
+    if os.path.splitext(filename)[1] in ['.png', '.jpg']: # Only read png or jpg files
         img = cv2.imread(os.path.join(dir_name, filename))
         images.append(img)
-        # images_rgb.append(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+#         images_rgb.append(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+
+# fig, ax = plt.subplots(4, 4, figsize=(15, 15))
+# for p in range(len(images)):
+#     row = int(p / 4)
+#     col = int(p % 4)
+#     ax[row, col].imshow(images_rgb[p])
+# plt.show()
     
 # Number of images
 # P = len(images)
@@ -26,31 +31,30 @@ for filename in np.sort(os.listdir(dir_name)): # 讀出這個路徑下的檔案
 height, width, channel = images[0].shape
 # print('image shape:', images[0].shape)
 
-
 # Exposure time
-exp_times = []
 speed = np.array([0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024])
-for i in range (len(speed)):
-    exp_times.append(1 / speed[i]) # let speed be changed as time
-    # print(exp_times[i])
+exp_times = [1 / speed[i] for i in range(len(speed))]
+# print(speed)
+# print(exp_times)
 
+# # Align input images
+# alignMTB = cv2.createAlignMTB()
+# alignMTB.process(images, images)
 
-# Align input images
-alignMTB = cv2.createAlignMTB()
-alignMTB.process(images, images)
-
-# Camera response function (CRF)
+# # Camera response function (CRF)
 # calibrateDebevec = cv2.createCalibrateDebevec()
-# responseDebevec = calibrateDebevec.process(images, exp_times)
+# responseDebevec = calibrateDebevec.process(images, np.array(exp_times, dtype = np.float32))
 
-# Merge images into HDR linear images
+# # Merge images into HDR linear images
 # mergeDebevec = cv2.createMergeDebevec()
-# hdrDebevec = mergeDebevec.process(images, exp_times, responseDebevec)
-
-# Save image
+# hdrDebevec = mergeDebevec.process(images, np.array(exp_times, dtype = np.float32), responseDebevec)
 # cv2.imwrite("test_cv2_lib.hdr", hdrDebevec)
 
-
+# # Tone mapping
+# tonemapDrago = cv2.createTonemapDrago(1.0, 0.7)
+# ldrDrago = tonemapDrago.process(hdrDebevec)
+# ldrDrago = 3 * ldrDrago
+# cv2.imwrite("test_cv2_lib_tone.png", ldrDrago * 255)
 
 # Paul E. Debevec's method
 # Reference: https://www.pauldebevec.com/Research/HDR/debevec-siggraph97.pdf
@@ -85,70 +89,60 @@ def gsolve(Z, B, l, w):
 
     # Solve the system using SVD
     x = np.linalg.lstsq(A, b, rcond = None)[0] # solve the answer of x from Ax = b 
-    g = x[:n].reshape(-1)
-    lE = x[n:].reshape(-1)
+    g = x[:n].reshape(-1) # the log exposure corresponding to pixel value z
+    lE = x[n:].reshape(-1) # the log film irradiance at pixel location i
 
     return g, lE
 
-def recovered_responseCurve(images, exposureTimes):
+def ResponseCurve(images, exp_times):
+    
     # Z: the pixel values of pixel location number i in image j
-    smallImages = deepcopy(images)
     smallRow = 10
     smallCol = 10
     
-    for i in range(len(images)):
-        smallImages[i] = cv2.resize(images[i], (smallRow, smallCol))
-    # print(np.asarray(smallImages).shape)
-    
-    smallImages = np.array(smallImages)
-    smallImages = np.reshape(smallImages, (len(smallImages), -1, 3))  # (nImage, w*h, channel)
-    smallImages = np.transpose(smallImages, (1, 0, 2))              # (w*h, nImage, channel)
-    # print(smallImages.shape)
+    # Resize the picture into smallRow x smallCol
+    Z = [cv2.resize(i, (smallRow, smallCol)) for i in images]
+    # print(1, np.asarray(Z).shape)
+    Z = np.reshape(Z, (len(Z), -1, 3)) 
+    # print(2, Z.shape) # (#images, w * h, channel)
+    Z = np.transpose(Z, (1, 0, 2)) 
+    # print(3, Z.shape) # (w * h, #images, channel)
 
     # B: the log delta t, or log shutter speed, for image j
-    B = np.log(exposureTimes)
+    B = np.log(exp_times)
     
     # l: the constant that determines the amount of smoothness
     l = 30    
 
     # w: the weighting function value for pixel value z
-    w = np.zeros(256)
-    for i in range(256):
-        w[i] = min(i, 256 - i)
+    w = [i if i <= 0.5 * 256 else 256 - i for i in range(256)]
 
     g = np.zeros((3, 256))
     lE = np.zeros((3, smallRow * smallCol))
 
+    # R, G and B channels
     for channel in range(3):
-        g[channel], lE[channel] = gsolve(smallImages[:,:,channel], B, l, w)
-    
-    return g
+        g[channel], lE[channel] = gsolve(Z[:, :, channel], B, l, w)
 
-
-def recovered_radiance(images, responseCurve, exposureTime):
-    logExposureTime = np.log(exposureTime)
-
-    weight = np.zeros(256)
-    for i in range(256):
-        weight[i] = min(i, 256 - i)
-
+    # Recover Radiance
     lE = np.zeros((height, width, 3))
-    for channel in range(3): 
+    for channel in range(3):
         for i in range(height):
             for j in range(width):
                 weightSum = 0
                 for image in range(len(images)):
                     z = images[image][i, j, channel]
-                    weightSum += weight[z]
-                    lE[i, j, channel] += weight[z] * (responseCurve[channel][z] - logExposureTime[image])
+                    weightSum += w[z]
+                    lE[i, j, channel] += w[z] * (g[channel][z] - B[image])
                 if weightSum != 0:
                     lE[i, j, channel] /= weightSum
     E = np.exp(lE)
     return E
 
-g = recovered_responseCurve(images, exp_times)
-E = recovered_radiance(images, g, exp_times)
-cv2.imwrite("test.hdr", E * 255)
+# E = ResponseCurve(images, np.array(exp_times, dtype = np.float32))
+# cv2.imwrite("test.hdr", E * 255)
+
+
 
 
 
