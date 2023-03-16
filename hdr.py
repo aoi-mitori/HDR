@@ -37,9 +37,9 @@ exp_times = [1 / speed[i] for i in range(len(speed))]
 # print(speed)
 # print(exp_times)
 
-# # Align input images
-# alignMTB = cv2.createAlignMTB()
-# alignMTB.process(images, images)
+# Align input images
+alignMTB = cv2.createAlignMTB()
+alignMTB.process(images, images)
 
 # # Camera response function (CRF)
 # calibrateDebevec = cv2.createCalibrateDebevec()
@@ -112,7 +112,7 @@ def ResponseCurve(images, exp_times):
     B = np.log(exp_times)
     
     # l: the constant that determines the amount of smoothness
-    l = 30    
+    l = 30   
 
     # w: the weighting function value for pixel value z
     w = [i if i <= 0.5 * 256 else 256 - i for i in range(256)]
@@ -125,7 +125,7 @@ def ResponseCurve(images, exp_times):
         g[channel], lE[channel] = gsolve(Z[:, :, channel], B, l, w)
 
     # Recover Radiance
-    lE = np.zeros((height, width, 3))
+    lnE = np.zeros((height, width, 3))
     for channel in range(3):
         for i in range(height):
             for j in range(width):
@@ -133,14 +133,14 @@ def ResponseCurve(images, exp_times):
                 for image in range(len(images)):
                     z = images[image][i, j, channel]
                     weightSum += w[z]
-                    lE[i, j, channel] += w[z] * (g[channel][z] - B[image])
+                    lnE[i, j, channel] += w[z] * (g[channel][z] - B[image])
                 if weightSum != 0:
-                    lE[i, j, channel] /= weightSum
-    E = np.exp(lE)
+                    lnE[i, j, channel] /= weightSum
+    E = np.exp(lnE)
     return E
 
-# E = ResponseCurve(images, np.array(exp_times, dtype = np.float32))
-# cv2.imwrite("test.hdr", E * 255)
+E = ResponseCurve(images, np.array(exp_times, dtype = np.float32))
+cv2.imwrite("test.hdr", E * 255)
 
 
 
