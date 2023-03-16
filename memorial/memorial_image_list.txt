@@ -1,5 +1,3 @@
-# Number of Images
-16
 # Filename  1/shutter_speed f/stop gain(db) ND_filters
 memorial0061.ppm 0.03125 8 0 0
 memorial0062.ppm 0.0625  8 0 0

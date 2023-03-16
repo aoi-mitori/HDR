@@ -5,7 +5,7 @@ import os
 
 
 # Read images
-dir_name = "Memorial_SourceImages"
+dir_name = "memorial"
 # dir_name = "exposures"
 
 images = []
@@ -32,14 +32,25 @@ height, width, channel = images[0].shape
 # print('image shape:', images[0].shape)
 
 # Exposure time
-speed = np.array([0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024])
-exp_times = [1 / speed[i] for i in range(len(speed))]
+# speed = np.array([0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024])
+# exp_times = [1 / speed[i] for i in range(len(speed))]
 # print(speed)
 # print(exp_times)
 
+def load_exp_time(dir_name):
+    Speed = []
+    f = open(os.path.join(dir_name + "/" + dir_name + '_image_list.txt'))
+    for i in f:
+        if (i[0] == '#'):
+            continue
+        (filename, speed, *rest) = i.split()
+        Speed += [float(speed)]
+    exp_times = [1 / Speed[i] for i in range(len(Speed))]
+    return exp_times
+
 # Align input images
-alignMTB = cv2.createAlignMTB()
-alignMTB.process(images, images)
+# alignMTB = cv2.createAlignMTB()
+# alignMTB.process(images, images)
 
 # # Camera response function (CRF)
 # calibrateDebevec = cv2.createCalibrateDebevec()
@@ -139,6 +150,7 @@ def ResponseCurve(images, exp_times):
     E = np.exp(lnE)
     return E
 
+exp_times = load_exp_time(dir_name)
 E = ResponseCurve(images, np.array(exp_times, dtype = np.float32))
 cv2.imwrite("test.hdr", E * 255)
 
