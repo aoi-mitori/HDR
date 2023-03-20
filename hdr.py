@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-
+from gtm import GlobalToneMapping
 
 # Read images
 dir_name = "memorial"
@@ -24,13 +24,6 @@ for filename in np.sort(os.listdir(dir_name)):
 #     ax[row, col].imshow(images_rgb[p])
 # plt.show()
     
-# Number of images
-# P = len(images)
-# print('P =', P)
-
-height, width, channel = images[0].shape
-# print('image shape:', images[0].shape)
-
 # Exposure time
 # speed = np.array([0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024])
 # exp_times = [1 / speed[i] for i in range(len(speed))]
@@ -136,6 +129,7 @@ def ResponseCurve(images, exp_times):
         g[channel], lE[channel] = gsolve(Z[:, :, channel], B, l, w)
 
     # Recover Radiance
+    height, width, ch = images[0].shape
     lnE = np.zeros((height, width, 3))
     for channel in range(3):
         for i in range(height):
@@ -150,11 +144,13 @@ def ResponseCurve(images, exp_times):
     E = np.exp(lnE)
     return E
 
+
 exp_times = load_exp_time(dir_name)
 E = ResponseCurve(images, np.array(exp_times, dtype = np.float32))
-cv2.imwrite("test.hdr", E * 255)
+cv2.imwrite("hdr.hdr", E * 255)
 
-
+GL_LDR, lm = GlobalToneMapping(E, 0.53, 0.9)
+cv2.imwrite("ldr.png", GL_LDR)
 
 
 
