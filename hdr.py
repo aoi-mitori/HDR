@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from gtm import GlobalToneMapping
+from gtm import global_tone_mapping
 from ltm import local_tone_mapping
 
 # Read images
@@ -99,7 +99,7 @@ def gsolve(Z, B, l, w):
 
     return g, lE
 
-def ResponseCurve(images, exp_times):
+def response_curve(images, exp_times):
     
     # Z: the pixel values of pixel location number i in image j
     smallRow = 10
@@ -147,14 +147,14 @@ def ResponseCurve(images, exp_times):
 
 
 exp_times = load_exp_time(dir_name)
-E = ResponseCurve(images, np.array(exp_times, dtype = np.float32))
+E = response_curve(images, np.array(exp_times, dtype = np.float32))
 cv2.imwrite("hdr.hdr", E * 255)
 
-GL_LDR, lm = GlobalToneMapping(E, 0.53, 0.9)
-cv2.imwrite("g_ldr.png", GL_LDR)
+GL_LDR, _ = global_tone_mapping(E, 0.18, 0.9)
+cv2.imwrite("g_ldr_white.png", GL_LDR)
 
-local_ldr = local_tone_mapping(E)
-cv2.imwrite("l_ldr.png", local_ldr)
+local_ldr = local_tone_mapping(E, a = 0.5, l_white = 0.9)
+cv2.imwrite("l_ldr_white.png", local_ldr)
 
 
 
