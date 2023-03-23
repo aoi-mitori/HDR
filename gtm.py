@@ -1,5 +1,4 @@
 import numpy as np
-import math
 
 # Global tone mapping
 # Big a: bright
