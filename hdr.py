@@ -2,21 +2,28 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+from mtb import read_files, mtb
 from gtm import global_tone_mapping
 from ltm import local_tone_mapping
 
 # Read images
-dir_name = "memorial"
+dir_name = "exposures"
 # dir_name = "exposures"
 
-images = []
+#images = []
 # images_rgb = []
 
-for filename in np.sort(os.listdir(dir_name)):
-    if os.path.splitext(filename)[1] in ['.png', '.jpg']: # Only read png or jpg files
-        img = cv2.imread(os.path.join(dir_name, filename))
-        images.append(img)
+# for filename in np.sort(os.listdir(dir_name)):
+#     if os.path.splitext(filename)[1] in ['.png', '.jpg']: # Only read png or jpg files
+#         img = cv2.imread(os.path.join(dir_name, filename))
+#         images.append(img)
 #         images_rgb.append(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+
+# read files
+images = read_files(dir_name)
+
+# alignment
+images = mtb(images)
 
 # fig, ax = plt.subplots(4, 4, figsize=(15, 15))
 # for p in range(len(images)):

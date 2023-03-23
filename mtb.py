@@ -3,6 +3,14 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
+def read_files(dir_name = "./memorial"):
+    images = []
+    for filename in np.sort(os.listdir(dir_name)):
+        if filename.split(".")[1] in ['png']:
+            img = cv2.imread(os.path.join(dir_name, filename))
+            images += [img]
+    return images
+
 def compute_bitmaps(img):
     height, width = img.shape
 
@@ -96,30 +104,32 @@ def show_bitmap(bitmap):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-    
-def mtb():
-    dir_name = "./Memorial_SourceImages"
-    images = []
+def translate(img, x, y):
+    M = np.float32([[1,0,x],[0,1,y]])
+    img_ = cv2.warpAffine(img, M, (img.shape[1], img.shape[0]))
+    return img_
+
+def mtb(images):
     images_gray = []
-
-    for filename in np.sort(os.listdir(dir_name)):
-        if filename.split(".")[1] in ['png']:
-            img = cv2.imread(os.path.join(dir_name, filename))
-            images += [img]
-
     #convert into grayscale
     for img in images:
         img_gray = img[:,:,1] #BGR
         images_gray += [img_gray]
 
-    sample_i = len(images_gray)//2 # choose the middle image as sample image
+    #sample_i = len(images_gray)//2 # choose the middle image as sample image
+    sample_i = 0
+    
     for i in range(len(images_gray)):
         if i != sample_i :
             sx, sy = get_exp_shift(images_gray[sample_i], images_gray[i])
             print(i)
             print(sx, sy)
             print("--")
+            images[i] = translate(images[i], sx, sy)
+
+    return images
+
   
 
-# mtb algorithm
-mtb()
+# # mtb algorithm
+# mtb()
