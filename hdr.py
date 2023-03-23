@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 from gtm import GlobalToneMapping
+from ltm import local_tone_mapping
 
 # Read images
 dir_name = "memorial"
@@ -150,7 +151,10 @@ E = ResponseCurve(images, np.array(exp_times, dtype = np.float32))
 cv2.imwrite("hdr.hdr", E * 255)
 
 GL_LDR, lm = GlobalToneMapping(E, 0.53, 0.9)
-cv2.imwrite("ldr.png", GL_LDR)
+cv2.imwrite("g_ldr.png", GL_LDR)
+
+local_ldr = local_tone_mapping(E)
+cv2.imwrite("l_ldr.png", local_ldr)
 
 
 
