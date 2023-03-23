@@ -3,12 +3,12 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-def read_files(dir_name = "./memorial"):
+def read_files(dir_name = "./exposures"):
     images = []
     for filename in np.sort(os.listdir(dir_name)):
-        if filename.split(".")[1] in ['png']:
+        if os.path.splitext(filename)[1] in ['.png', '.jpg']: # Only read png or jpg files
             img = cv2.imread(os.path.join(dir_name, filename))
-            images += [img]
+            images.append(img)
     return images
 
 def compute_bitmaps(img):
@@ -24,7 +24,7 @@ def compute_bitmaps(img):
                 t_bitmap[h,w] = True
             else:
                 t_bitmap[h,w] = False
-            if img[h,w] > median-4 and img[h,w] < median+4 :
+            if img[h,w] > median - 4 and img[h,w] < median + 4 :
                 e_bitmap[h,w] = False
             else: 
                 e_bitmap[h,w] = True    
@@ -42,9 +42,9 @@ def shift_bitmap(bitmap, shift_x, shift_y):
     # shift left/right
     bitmap = np.roll(bitmap, shift_x, axis=1)
     if shift_x > 0:
-        bitmap[:,:shift_x] = np.zeros(bitmap[:,:shift_x].shape)
+        bitmap[:, :shift_x] = np.zeros(bitmap[:,:shift_x].shape)
     elif shift_x < 0:
-        bitmap[:,shift_x:] = np.zeros(bitmap[:,shift_x:].shape)
+        bitmap[:, shift_x:] = np.zeros(bitmap[:,shift_x:].shape)
 
     return bitmap
 
@@ -129,7 +129,3 @@ def mtb(images):
 
     return images
 
-  
-
-# # mtb algorithm
-# mtb()
