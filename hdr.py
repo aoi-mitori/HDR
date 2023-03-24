@@ -9,12 +9,10 @@ from ltm import local_tone_mapping
 def load_exp_time(dir_name):
     Speed = []
     f = open(os.path.join(dir_name + "/" + dir_name + '_image_list.txt'))
-    for i in f:
-        if (i[0] == '#'):
-            continue
-        (filename, speed, *rest) = i.split()
-        Speed += [float(speed)]
+    Speed += [float(i) for i in f]
+    print("Speed Time: {0}".format(Speed))
     exp_times = [1 / Speed[i] for i in range(len(Speed))]
+    print("Exposure Time: {0}".format(exp_times))
     return exp_times
 
 # Paul E. Debevec's method
@@ -99,7 +97,7 @@ def response_curve(images, exp_times):
     return E
 
 # Read images
-dir_name = "CKS2"
+dir_name = "CKS4"
 
 # read files
 images = read_files(dir_name)
@@ -109,10 +107,10 @@ images = mtb(images)
 
 exp_times = load_exp_time(dir_name)
 E = response_curve(images, np.array(exp_times, dtype = np.float32))
-cv2.imwrite("hdr.hdr", E * 255)
+cv2.imwrite(dir_name + "_hdr.hdr", E * 255)
 
 GL_LDR, _ = global_tone_mapping(E, 0.18, 0.9)
-cv2.imwrite("g_ldr_white.png", GL_LDR)
+cv2.imwrite(dir_name + "_g_ldr_white.png", GL_LDR)
 
 local_ldr = local_tone_mapping(E, a = 0.18, l_white = 0.9)
-cv2.imwrite("l_ldr_white.png", local_ldr)
+cv2.imwrite(dir_name + "_l_ldr_white.png", local_ldr)
