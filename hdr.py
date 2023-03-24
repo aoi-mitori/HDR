@@ -6,16 +6,6 @@ from mtb import read_files, mtb
 from gtm import global_tone_mapping
 from ltm import local_tone_mapping
 
-# Read images
-# dir_name = "memorial"
-dir_name = "exposures"
-
-# read files
-images = read_files(dir_name)
-
-# alignment
-images = mtb(images)
-
 def load_exp_time(dir_name):
     Speed = []
     f = open(os.path.join(dir_name + "/" + dir_name + '_image_list.txt'))
@@ -53,9 +43,9 @@ def gsolve(Z, B, l, w):
 
     # Include the smoothness equations
     for i in range(n - 1):
-        A[k, i]= l * w[i + 1] 
-        A[k, i + 1] = (-2) * l * w[i + 1] 
-        A[k, i + 2] = l * w[i + 1] 
+        A[k, i - 1]= l * w[i] 
+        A[k, i] = (-2) * l * w[i] 
+        A[k, i + 1] = l * w[i] 
         k = k + 1
 
     # Solve the system using SVD
@@ -108,6 +98,14 @@ def response_curve(images, exp_times):
     E = np.exp(lnE)
     return E
 
+# Read images
+dir_name = "CKS2"
+
+# read files
+images = read_files(dir_name)
+
+# alignment
+images = mtb(images)
 
 exp_times = load_exp_time(dir_name)
 E = response_curve(images, np.array(exp_times, dtype = np.float32))
@@ -118,10 +116,3 @@ cv2.imwrite("g_ldr_white.png", GL_LDR)
 
 local_ldr = local_tone_mapping(E, a = 0.18, l_white = 0.9)
 cv2.imwrite("l_ldr_white.png", local_ldr)
-
-
-
-
-
-
-

@@ -3,10 +3,10 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-def read_files(dir_name = "./exposures"):
+def read_files(dir_name):
     images = []
     for filename in np.sort(os.listdir(dir_name)):
-        if os.path.splitext(filename)[1] in ['.png', '.jpg']: # Only read png or jpg files
+        if os.path.splitext(filename)[1] in ['.png', '.jpg', '.JPG']: # Only read png or jpg files
             img = cv2.imread(os.path.join(dir_name, filename))
             images.append(img)
     return images
