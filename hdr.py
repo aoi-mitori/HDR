@@ -53,6 +53,7 @@ def gsolve(Z, B, l, w):
 
     return g, lE
 
+
 def plot_response_curve(g):
     color = ['blue', 'green', 'red']
     fig, ax = plt.subplots(2,2,figsize=(10,10))
@@ -72,6 +73,15 @@ def plot_response_curve(g):
     fig.savefig('response_curves.png')
 
 
+def plot_radiance(hdr):
+    radiance = np.log( 0.2126 * hdr[:, :, 0] + 0.7152 * hdr[:, :, 1]  + 0.0722 * hdr[:, :, 2] )
+    print(np.max(radiance), np.min(radiance))
+    plt.figure(figsize=(20,20))
+    plt.imshow(radiance, cmap='jet')
+    plt.title('radiance map')
+    plt.axis('off')
+    plt.colorbar()
+    plt.savefig('radiance_map.png')
 
 def response_curve(images, exp_times):
     
@@ -117,6 +127,10 @@ def response_curve(images, exp_times):
                 if weightSum != 0:
                     lnE[i, j, channel] /= weightSum
     E = np.exp(lnE)
+
+    # Plot Radiance
+    plot_radiance(E)
+
     return E
 
 
