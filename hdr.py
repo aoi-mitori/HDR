@@ -53,6 +53,26 @@ def gsolve(Z, B, l, w):
 
     return g, lE
 
+def plot_response_curve(g):
+    color = ['blue', 'green', 'red']
+    fig, ax = plt.subplots(2,2,figsize=(10,10))
+    for x in range(2):
+        for y in range(2):
+            if x+y != 2:
+                index = x*2+y
+                ax[x][y].scatter(x=g[index], y=np.arange(256), c=color[index], s=1)
+                ax[x][y].set_title(color[index])
+            else:
+                for channel in range(3):
+                    ax[x][y].scatter(x=g[channel], y=np.arange(256), c=color[channel], s=1)
+                ax[x][y].set_title('all')
+            ax[x][y].set_xlabel('log exposure X')
+            ax[x][y].set_ylabel('pixel value Z')
+    fig.tight_layout(pad=2.0)
+    fig.savefig('response_curves.png')
+
+
+
 def response_curve(images, exp_times):
     
     # Z: the pixel values of pixel location number i in image j
@@ -80,6 +100,9 @@ def response_curve(images, exp_times):
     for channel in range(3):
         g[channel], lE[channel] = gsolve(Z[:, :, channel], B, l, w)
 
+    # Plot Response Curve
+    plot_response_curve(g)
+
     # Recover Radiance
     height, width, ch = images[0].shape
     lnE = np.zeros((height, width, 3))
@@ -96,8 +119,10 @@ def response_curve(images, exp_times):
     E = np.exp(lnE)
     return E
 
+
+
 # Read images
-dir_name = "CKS4"
+dir_name = "memorial"
 
 # read files
 images = read_files(dir_name)
