@@ -1,15 +1,7 @@
 import cv2
 import numpy as np
 import os
-import matplotlib.pyplot as plt
 
-def read_files(dir_name):
-    images = []
-    for filename in np.sort(os.listdir(dir_name)):
-        if os.path.splitext(filename)[1] in ['.png', '.jpg', '.JPG']: # Only read png or jpg files
-            img = cv2.imread(os.path.join(dir_name, filename))
-            images.append(img)
-    return images
 
 def compute_bitmaps(img):
     height, width = img.shape

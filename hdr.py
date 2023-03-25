@@ -1,19 +1,12 @@
 import cv2
-import numpy as np
-import matplotlib.pyplot as plt
 import os
-from mtb import read_files, mtb
-from gtm import global_tone_mapping
-from ltm import local_tone_mapping
+import numpy as np
+from options import args
 
-def load_exp_time(dir_name):
-    Speed = []
-    f = open(os.path.join(dir_name + "/" + dir_name + '_image_list.txt'))
-    Speed += [float(i) for i in f]
-    print("Speed Time: {0}".format(Speed))
-    exp_times = [1 / Speed[i] for i in range(len(Speed))]
-    print("Exposure Time: {0}".format(exp_times))
-    return exp_times
+from utils import read_files, load_exp_time, plot_radiance, plot_response_curve
+from mtb import mtb
+from tone_mapping import global_tone_mapping, local_tone_mapping
+
 
 # Paul E. Debevec's method
 # Reference: https://www.pauldebevec.com/Research/HDR/debevec-siggraph97.pdf
@@ -54,35 +47,6 @@ def gsolve(Z, B, l, w):
     return g, lE
 
 
-def plot_response_curve(g):
-    color = ['blue', 'green', 'red']
-    fig, ax = plt.subplots(2,2,figsize=(10,10))
-    for x in range(2):
-        for y in range(2):
-            if x+y != 2:
-                index = x*2+y
-                ax[x][y].scatter(x=g[index], y=np.arange(256), c=color[index], s=1)
-                ax[x][y].set_title(color[index])
-            else:
-                for channel in range(3):
-                    ax[x][y].scatter(x=g[channel], y=np.arange(256), c=color[channel], s=1)
-                ax[x][y].set_title('all')
-            ax[x][y].set_xlabel('log exposure X')
-            ax[x][y].set_ylabel('pixel value Z')
-    fig.tight_layout(pad=2.0)
-    fig.savefig('response_curves.png')
-
-
-def plot_radiance(hdr):
-    radiance = np.log( 0.2126 * hdr[:, :, 0] + 0.7152 * hdr[:, :, 1]  + 0.0722 * hdr[:, :, 2] )
-    print(np.max(radiance), np.min(radiance))
-    plt.figure(figsize=(20,20))
-    plt.imshow(radiance, cmap='jet')
-    plt.title('radiance map')
-    plt.axis('off')
-    plt.colorbar()
-    plt.savefig('radiance_map.png')
-
 def response_curve(images, exp_times):
     
     # Z: the pixel values of pixel location number i in image j
@@ -110,8 +74,6 @@ def response_curve(images, exp_times):
     for channel in range(3):
         g[channel], lE[channel] = gsolve(Z[:, :, channel], B, l, w)
 
-    # Plot Response Curve
-    plot_response_curve(g)
 
     # Recover Radiance
     height, width, ch = images[0].shape
@@ -128,28 +90,42 @@ def response_curve(images, exp_times):
                     lnE[i, j, channel] /= weightSum
     E = np.exp(lnE)
 
+    return E, g
+
+def hdr():
+    src_dir = args.src_dir
+    out_dir = args.out_dir
+    shutter_speed_dir = args.exposure_file
+
+    isExist = os.path.exists(out_dir)
+    if not isExist:
+        os.makedirs(out_dir)
+
+    # read files
+    images = read_files(src_dir)
+    # alignment
+    if args.mtb:
+        images = mtb(images)
+    # load exposures
+    exp_times = load_exp_time(src_dir, shutter_speed_dir)
+    # HDR
+    E, g = response_curve(images, np.array(exp_times, dtype = np.float32))
+    cv2.imwrite(out_dir + src_dir[:-1] + ".hdr", E * 255)
+    # global tone mapping
+    global_ldr, _ = global_tone_mapping(E, a = args.a, l_white = args.lw)
+    cv2.imwrite(out_dir + src_dir[:-1] + "_global_tone.png", global_ldr)
+    # local tone mapping
+    local_ldr = local_tone_mapping(E, a = args.a, l_white = args.lw)
+    cv2.imwrite(out_dir + src_dir[:-1] + "_local_tone.png", local_ldr)
+
+    # Plot Response Curve
+    if args.plot_curve:
+        plot_response_curve(g, out_dir)
+
     # Plot Radiance
-    plot_radiance(E)
-
-    return E
-
+    if args.plot_radiance:
+        plot_radiance(E, out_dir)
 
 
-# Read images
-dir_name = "memorial"
 
-# read files
-images = read_files(dir_name)
-
-# alignment
-images = mtb(images)
-
-exp_times = load_exp_time(dir_name)
-E = response_curve(images, np.array(exp_times, dtype = np.float32))
-cv2.imwrite(dir_name + "_hdr.hdr", E * 255)
-
-GL_LDR, _ = global_tone_mapping(E, 0.18, 0.9)
-cv2.imwrite(dir_name + "_g_ldr_white.png", GL_LDR)
-
-local_ldr = local_tone_mapping(E, a = 0.18, l_white = 0.9)
-cv2.imwrite(dir_name + "_l_ldr_white.png", local_ldr)
+hdr()
