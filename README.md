@@ -16,7 +16,11 @@ And then run
 python3 hdr.py --src_dic [input_directory]
 ```
 
-## Sample Results
+## Sample Results :one:
+```
+python3 .\hdr.py --no-mtb --src_dir memorial --out_dir memorial_outputs
+```
+
 Tone mapping
 | Global tone mapping | Local tone mapping | 
 | :-----------------: | :----------------: | 
