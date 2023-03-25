@@ -40,7 +40,7 @@ Response curves
 ![](memorial_outputs/response_curves.png)
 
 ## Sample Results :classical_building:
-Input images : [Liberty Square](https://drive.google.com/drive/folders/1Bg78b7R09W5hkZWhvWrHOeB1V4kGHzK3?usp=share_link)
+Decompress CKS folder : `tar zxvf CKS.tar.gz`
 ```
 python3 hdr.py --src_dir CKS --out_dir CKS_outputs
 ```
