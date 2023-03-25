@@ -29,7 +29,8 @@ python3 hdr.py --no-mtb --src_dir memorial --out_dir memorial_outputs
 Tone mapping
 | Global tone mapping | Local tone mapping | 
 | :-----------------: | :----------------: | 
-| ![](memorial_outputs/memorial_global_tone.png) | ![](memorial_outputs/memorial_local_tone.png) |
+| <img width="400" alt="memorial_global_tone" src="https://github.com/aoi-mitori/HDR/blob/main/memorial_outputs/memorial_global_tone.png"> | <img width="400" alt="memorial_local_tone" src="https://github.com/aoi-mitori/HDR/blob/main/memorial_outputs/memorial_local_tone.png"> |
+
 
 Radiance map
 
@@ -37,7 +38,7 @@ Radiance map
 
 Response curves
 
-![](memorial_outputs/response_curves.png)
+<img width="700" alt="response_curves" src="https://github.com/aoi-mitori/HDR/blob/main/memorial_outputs/response_curves.png">
 
 ## Sample Results :classical_building:
 Decompress CKS folder : `tar zxvf CKS.tar.gz`
@@ -52,8 +53,9 @@ Tone mapping
 
 Radiance map
 
-![](CKS_outputs/radiance_map.png)
+<img width="700" alt="radiance_map" src="https://github.com/aoi-mitori/HDR/blob/main/CKS_outputs/radiance_map.png">
 
 Response curves
 
-![](CKS_outputs/response_curves.png)
+<img width="700" alt="response_curves" src="https://github.com/aoi-mitori/HDR/blob/main/CKS_outputs/response_curves.png">
+
