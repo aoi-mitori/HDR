@@ -18,7 +18,7 @@ def read_files(dir_name):
 
 def load_exp_time(dir_name, file_name):
     Speed = []
-    f = open(os.path.join(dir_name + file_name))
+    f = open(os.path.join(dir_name, file_name))
     
     Speed += [float(i) for i in f]
     print("Speed Time: {0}".format(Speed))
@@ -42,7 +42,7 @@ def plot_radiance(hdr, dir):
     cax = divider.append_axes('right', size='5%', pad=0.05)
     im = ax.imshow(log_radiance, cmap='jet')
     fig.colorbar(im, cax=cax, format=ticker.FuncFormatter(fmt))
-    plt.savefig(dir + 'radiance_map.png')
+    plt.savefig(dir + '/radiance_map.png')
 
 
 def plot_response_curve(g, dir):
@@ -61,5 +61,5 @@ def plot_response_curve(g, dir):
             ax[x][y].set_xlabel('log exposure X')
             ax[x][y].set_ylabel('pixel value Z')
     fig.tight_layout(pad=2.0)
-    fig.savefig(dir + 'response_curves.png')
+    fig.savefig(dir + '/response_curves.png')
 

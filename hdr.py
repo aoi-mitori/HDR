@@ -110,13 +110,13 @@ def hdr():
     exp_times = load_exp_time(src_dir, shutter_speed_dir)
     # HDR
     E, g = response_curve(images, np.array(exp_times, dtype = np.float32))
-    cv2.imwrite(out_dir + src_dir[:-1] + ".hdr", E * 255)
+    cv2.imwrite(out_dir + '/' + src_dir + ".hdr", E * 255)
     # global tone mapping
     global_ldr, _ = global_tone_mapping(E, a = args.a, l_white = args.lw)
-    cv2.imwrite(out_dir + src_dir[:-1] + "_global_tone.png", global_ldr)
+    cv2.imwrite(out_dir + '/' + src_dir + "_global_tone.png", global_ldr)
     # local tone mapping
     local_ldr = local_tone_mapping(E, a = args.a, l_white = args.lw)
-    cv2.imwrite(out_dir + src_dir[:-1] + "_local_tone.png", local_ldr)
+    cv2.imwrite(out_dir + '/' + src_dir + "_local_tone.png", local_ldr)
 
     # Plot Response Curve
     if args.plot_curve:
