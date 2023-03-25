@@ -32,9 +32,11 @@ Tone mapping
 | ![](memorial_outputs/memorial_global_tone.png) | ![](memorial_outputs/memorial_local_tone.png) |
 
 Radiance map
+
 ![](memorial_outputs/radiance_map.png)
 
 Response curves
+
 ![](memorial_outputs/response_curves.png)
 
 ## Sample Results :classical_building:
@@ -49,7 +51,9 @@ Tone mapping
 | ![](CKS_outputs/CKS_global_tone.png) | ![](CKS_outputs/CKS_local_tone.png) |
 
 Radiance map
+
 ![](CKS_outputs/radiance_map.png)
 
 Response curves
+
 ![](CKS_outputs/response_curves.png)
