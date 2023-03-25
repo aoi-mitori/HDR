@@ -15,23 +15,47 @@ And then run
 ```
 python3 hdr.py --src_dic [input_directory]
 ```
-Other parameters' usage
+
+## Advanced Usage
 ```
 python3 hdr.py --help
 ```
 
-## Sample Results :one:
+## Sample Results :church:
 ```
-python3 .\hdr.py --no-mtb --src_dir memorial --out_dir memorial_outputs
+python3 hdr.py --no-mtb --src_dir memorial --out_dir memorial_outputs
 ```
 
 Tone mapping
 | Global tone mapping | Local tone mapping | 
 | :-----------------: | :----------------: | 
-| ![](memorial_outputs/memorial_global_tone.png) | ![](memorial_outputs/memorial_local_tone.png) |
+| <img width="400" alt="memorial_global_tone" src="https://github.com/aoi-mitori/HDR/blob/main/memorial_outputs/memorial_global_tone.png"> | <img width="400" alt="memorial_local_tone" src="https://github.com/aoi-mitori/HDR/blob/main/memorial_outputs/memorial_local_tone.png"> |
+
 
 Radiance map
+
 ![](memorial_outputs/radiance_map.png)
 
 Response curves
-![](memorial_outputs/response_curves.png)
+
+<img width="700" alt="response_curves" src="https://github.com/aoi-mitori/HDR/blob/main/memorial_outputs/response_curves.png">
+
+## Sample Results :classical_building:
+Input images : [Liberty Square](https://drive.google.com/drive/folders/1Bg78b7R09W5hkZWhvWrHOeB1V4kGHzK3?usp=share_link)
+```
+python3 hdr.py --src_dir CKS --out_dir CKS_outputs
+```
+
+Tone mapping
+| Global tone mapping | Local tone mapping | 
+| :-----------------: | :----------------: | 
+| ![](CKS_outputs/CKS_global_tone.png) | ![](CKS_outputs/CKS_local_tone.png) |
+
+Radiance map
+
+<img width="700" alt="radiance_map" src="https://github.com/aoi-mitori/HDR/blob/main/CKS_outputs/radiance_map.png">
+
+Response curves
+
+<img width="700" alt="response_curves" src="https://github.com/aoi-mitori/HDR/blob/main/CKS_outputs/response_curves.png">
+
