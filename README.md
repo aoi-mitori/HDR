@@ -15,10 +15,13 @@ And then run
 ```
 python3 hdr.py --src_dic [input_directory]
 ```
-
-## Sample Results :one:
+## Advanced Usage
 ```
-python3 .\hdr.py --no-mtb --src_dir memorial --out_dir memorial_outputs
+python3 hdr.py --help
+```
+## Sample Results :church:
+```
+python3 hdr.py --no-mtb --src_dir memorial --out_dir memorial_outputs
 ```
 
 Tone mapping
@@ -31,3 +34,20 @@ Radiance map
 
 Response curves
 ![](memorial_outputs/response_curves.png)
+
+## Sample Results :classical_building:
+Input images : [Liberty Square](https://drive.google.com/drive/folders/1Bg78b7R09W5hkZWhvWrHOeB1V4kGHzK3?usp=share_link)
+```
+python3 hdr.py --src_dir CKS --out_dir CKS_outputs
+```
+
+Tone mapping
+| Global tone mapping | Local tone mapping | 
+| :-----------------: | :----------------: | 
+| ![](CKS_outputs/CKS_global_tone.png) | ![](CKS_outputs/CKS_local_tone.png) |
+
+Radiance map
+![](CKS_outputs/radiance_map.png)
+
+Response curves
+![](CKS_outputs/response_curves.png)
