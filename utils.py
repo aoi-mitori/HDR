@@ -36,7 +36,7 @@ def fmt(x, pos):
 def plot_radiance(hdr, dir):
     radiance = 0.2126 * hdr[:, :, 0] + 0.7152 * hdr[:, :, 1]  + 0.0722 * hdr[:, :, 2]
     log_radiance = np.log(radiance)
-    print(np.max(radiance), np.min(radiance))
+    # print(np.max(radiance), np.min(radiance))
     fig, ax = plt.subplots()
     divider = make_axes_locatable(ax)
     cax = divider.append_axes('right', size='5%', pad=0.05)
