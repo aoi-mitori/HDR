@@ -17,11 +17,13 @@ python3 hdr.py --src_dic [input_directory]
 ```
 
 ## Sample Results
-### Tone mapping
+Tone mapping
 | Global tone mapping | Local tone mapping | 
 | :-----------------: | :----------------: | 
 | ![](memorial_outputs/memorial_global_tone.png) | ![](memorial_outputs/memorial_local_tone.png) |
-### Radiance map
+
+Radiance map
 ![](memorial_outputs/radiance_map.png)
-### Response curves
+
+Response curves
 ![](memorial_outputs/response_curves.png)
