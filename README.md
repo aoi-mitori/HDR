@@ -15,10 +15,12 @@ And then run
 ```
 python3 hdr.py --src_dic [input_directory]
 ```
+
 ## Advanced Usage
 ```
 python3 hdr.py --help
 ```
+
 ## Sample Results :church:
 ```
 python3 hdr.py --no-mtb --src_dir memorial --out_dir memorial_outputs

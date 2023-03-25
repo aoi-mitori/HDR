@@ -1,8 +1,8 @@
 import cv2
 import os
 import numpy as np
+from tqdm import tqdm
 from options import args
-
 from utils import read_files, load_exp_time, plot_radiance, plot_response_curve
 from mtb import mtb
 from tone_mapping import global_tone_mapping, local_tone_mapping
@@ -76,10 +76,11 @@ def response_curve(images, exp_times):
 
 
     # Recover Radiance
+    print("\nRecover Radiance of RGB Channels")
     height, width, ch = images[0].shape
     lnE = np.zeros((height, width, 3))
     for channel in range(3):
-        for i in range(height):
+        for i in tqdm(range(height)):
             for j in range(width):
                 weightSum = 0
                 for image in range(len(images)):
@@ -103,18 +104,25 @@ def hdr():
 
     # read files
     images = read_files(src_dir)
+    
     # alignment
     if args.mtb:
         images = mtb(images)
+    
     # load exposures
     exp_times = load_exp_time(src_dir, shutter_speed_dir)
+    
     # HDR
     E, g = response_curve(images, np.array(exp_times, dtype = np.float32))
     cv2.imwrite(out_dir + '/' + src_dir + ".hdr", E * 255)
+    
     # global tone mapping
+    print("Global Tone Mapping")
     global_ldr, _ = global_tone_mapping(E, a = args.a, l_white = args.lw)
     cv2.imwrite(out_dir + '/' + src_dir + "_global_tone.png", global_ldr)
+    
     # local tone mapping
+    print("Local Tone Mapping")
     local_ldr = local_tone_mapping(E, a = args.a, l_white = args.lw)
     cv2.imwrite(out_dir + '/' + src_dir + "_local_tone.png", local_ldr)
 
