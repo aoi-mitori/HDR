@@ -15,6 +15,10 @@ And then run
 ```
 python3 hdr.py --src_dic [input_directory]
 ```
+Other parameters' usage
+```
+python3 hdr.py --help
+```
 
 ## Sample Results :one:
 ```
