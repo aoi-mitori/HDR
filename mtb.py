@@ -111,7 +111,7 @@ def mtb(images):
     #sample_i = len(images_gray)//2 # choose the middle image as sample image
     sample_i = 0
     
-    print("MTB Aligment\n")
+    print("MTB Alignment\n")
     for i in range(len(images_gray)):
         if i != sample_i :
             sx, sy = get_exp_shift(images_gray[sample_i], images_gray[i])
