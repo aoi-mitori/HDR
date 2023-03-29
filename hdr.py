@@ -78,8 +78,8 @@ def response_curve(images, exp_times):
     # Recover Radiance
     print("\nRecover Radiance of RGB Channels")
     height, width, ch = images[0].shape
-    lnE = np.zeros((height, width, 3))
-    for channel in range(3):
+    lnE = np.zeros((height, width, ch))
+    for channel in range(ch):
         for i in tqdm(range(height)):
             for j in range(width):
                 weightSum = 0
