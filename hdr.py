@@ -67,28 +67,27 @@ def response_curve(images, exp_times):
     # w: the weighting function value for pixel value z
     w = [i if i <= 0.5 * 256 else 256 - i for i in range(256)]
 
-    g = np.zeros((3, 256))
-    lE = np.zeros((3, smallRow * smallCol))
+    height, width, channel = images[0].shape
+    g = np.zeros((channel, 256))
+    lE = np.zeros((channel, smallRow * smallCol))
 
     # R, G and B channels
-    for channel in range(3):
-        g[channel], lE[channel] = gsolve(Z[:, :, channel], B, l, w)
-
+    for ch in range(channel):
+        g[ch], lE[ch] = gsolve(Z[:, :, ch], B, l, w)
 
     # Recover Radiance
     print("\nRecover Radiance of RGB Channels")
-    height, width, ch = images[0].shape
-    lnE = np.zeros((height, width, ch))
-    for channel in range(ch):
+    lnE = np.zeros((height, width, channel))
+    for ch in range(channel):
         for i in tqdm(range(height)):
             for j in range(width):
                 weightSum = 0
                 for image in range(len(images)):
-                    z = images[image][i, j, channel]
+                    z = images[image][i, j, ch]
                     weightSum += w[z]
-                    lnE[i, j, channel] += w[z] * (g[channel][z] - B[image])
+                    lnE[i, j, ch] += w[z] * (g[ch][z] - B[image])
                 if weightSum != 0:
-                    lnE[i, j, channel] /= weightSum
+                    lnE[i, j, ch] /= weightSum
     E = np.exp(lnE)
 
     return E, g
