@@ -2,8 +2,15 @@
 This project is an implementation of High Dynamic Range (HDR) imaging techniques.<br />
 HDR imaging is a technique used to capture and display a wider range of brightness and color values than traditional imaging methods. 
 
+*** 2023/04/12 update *** <br /> 
+We are team 6, and our result project won the first score of the election.
+| Result | Election | 
+| :-----------------: | :----------------: | 
+| <img width="400" alt="Result" src="https://github.com/aoi-mitori/HDR/blob/main/result.jpeg"> | <img width="400" alt="Election" src="https://github.com/aoi-mitori/HDR/blob/main/election.png"> |
+
+
 ## Usage
-To run this project, you'll need to provide the input images and a txt file that records shutter speeds.
+To run this project, you'll need to provide the input images and a .txt file that records shutter speeds.
 ```
 [input_directory]/
 ├──[image1]
